@@ -15,15 +15,12 @@ import com.sky.exception.AccountNotFoundException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.result.PageResult;
-import com.sky.result.Result;
 import com.sky.service.EmployeeService;
-import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,8 +31,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeMapper employeeMapper;
-    @Autowired
-    private EmployeeService employeeService;
 
     /**
      * 员工登录
@@ -116,14 +111,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     /**
-     * 员工分页查询
+     * 启用禁用员工
+     * @param status
+     * @param id
      */
-    @GetMapping("/page")
-    @ApiOperation("分页查询员工信息")
-    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){
-        log.info("员工分页查询，参数为：{}", employeePageQueryDTO);
-        PageResult pageResult = employeeService.pageQuery(employeePageQueryDTO);
-        return Result.success(pageResult);
+    @Override
+    public void startOrStop(Integer status, long id) {
+        Employee employee = Employee.builder()
+                .status(status)
+                .id(id)
+                .build();
+        employeeMapper.update(employee);
     }
 
 }
